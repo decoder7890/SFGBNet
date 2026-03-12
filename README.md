@@ -1,1 +1,1 @@
-SFGBnet
+SFGBNet
