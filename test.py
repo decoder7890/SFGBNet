@@ -240,13 +240,11 @@ def ValidateSegmentation(args):
         state_dict = checkpoint
         print("加载直接state_dict格式")
     
-    # 检查并修复键名不匹配问题（PU/PS vs MDFA/MUFA）
     model_keys = set(model.state_dict().keys())
     weight_keys = set(state_dict.keys())
     
-    # 如果权重文件使用PU/PS，但模型使用MDFA/MUFA，需要映射
     if any('PU' in k or 'PS' in k for k in weight_keys) and any('MDFA' in k or 'MUFA' in k for k in model_keys):
-        print("检测到键名不匹配: 映射 PU/PS → MDFA/MUFA")
+        print("检测到键名不匹配")
         new_state_dict = {}
         for k, v in state_dict.items():
             new_key = k
@@ -256,9 +254,9 @@ def ValidateSegmentation(args):
                 new_key = k.replace('PS', 'MUFA')
             new_state_dict[new_key] = v
         state_dict = new_state_dict
-    # 如果模型使用PU/PS，但权重文件使用MDFA/MUFA，需要反向映射
+        
     elif any('MDFA' in k or 'MUFA' in k for k in weight_keys) and any('PU' in k or 'PS' in k for k in model_keys):
-        print("检测到键名不匹配: 映射 MDFA/MUFA → PU/PS")
+        print("检测到键名不匹配")
         new_state_dict = {}
         for k, v in state_dict.items():
             new_key = k
